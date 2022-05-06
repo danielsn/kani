@@ -387,13 +387,22 @@ impl<'tcx> GotocHook<'tcx> for PtrRead {
         let p = assign_to.unwrap();
         let target = target.unwrap();
         let src = fargs.remove(0);
+
+        let dst_goto =
+            unwrap_or_return_codegen_unimplemented_stmt!(tcx, tcx.codegen_place(&p)).goto_expr;
+        let size_expr = dst_goto.typ().sizeof_expr(&tcx.symbol_table);
+        let memcpy = BuiltinFn::Memcpy
+            .call(
+                vec![
+                    dst_goto.address_of().cast_to(Type::void_pointer()),
+                    src.cast_to(Type::void_pointer()),
+                    size_expr,
+                ],
+                loc,
+            )
+            .as_stmt(loc);
         Stmt::block(
-            vec![
-                unwrap_or_return_codegen_unimplemented_stmt!(tcx, tcx.codegen_place(&p))
-                    .goto_expr
-                    .assign(src.dereference().with_location(loc.clone()), loc.clone()),
-                Stmt::goto(tcx.current_fn().find_label(&target), loc.clone()),
-            ],
+            vec![memcpy, Stmt::goto(tcx.current_fn().find_label(&target), loc.clone())],
             loc,
         )
     }
