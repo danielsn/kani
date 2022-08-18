@@ -312,6 +312,10 @@ impl Expr {
         }
     }
 
+    pub fn is_lvalue(&self) -> bool {
+        self.can_take_address_of()
+    }
+
     /// Returns whether an expression causes side effects or not
     pub fn is_side_effect(&self) -> bool {
         match &*self.value {
@@ -1490,6 +1494,13 @@ impl Expr {
 
     /// `self = rhs;`
     pub fn assign(self, rhs: Expr, loc: Location) -> Stmt {
+        assert_eq!(self.typ(), rhs.typ(), "Error: assign statement with unequal types",);
+        assert!(
+            self.is_lvalue(),
+            "Expected lvalue on LHS of assignment\n{:?}\n{:?}",
+            self,
+            self.typ()
+        );
         Stmt::assign(self, rhs, loc)
     }
 

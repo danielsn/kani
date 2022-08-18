@@ -165,12 +165,12 @@ macro_rules! stmt {
 impl Stmt {
     /// `lhs = rhs;`
     pub fn assign(lhs: Expr, rhs: Expr, loc: Location) -> Self {
-        assert_eq!(
-            lhs.typ(),
-            rhs.typ(),
-            "Error: assign statement with unequal types lhs {:?} rhs {:?}",
-            lhs.typ(),
-            rhs.typ()
+        assert_eq!(lhs.typ(), rhs.typ(), "Error: assign statement with unequal types",);
+        assert!(
+            lhs.is_lvalue(),
+            "Expected lvalue on LHS of assignment\n{:?}\n{:?}",
+            lhs,
+            lhs.typ()
         );
         stmt!(Assign { lhs, rhs }, loc)
     }
