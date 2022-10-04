@@ -14,6 +14,12 @@ use std::ops::{BitAnd, BitOr};
 #[derive(Clone, Copy, Debug)]
 pub struct GuestAddress(pub usize);
 
+impl kani::Arbitrary for GuestAddress {
+    fn any() -> Self {
+        GuestAddress(kani::any())       
+    }
+}
+
 impl GuestAddress {
     /// Returns the offset from this address to the given base address.
     ///

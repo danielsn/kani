@@ -56,6 +56,8 @@ impl MemoryMapping {
         // This is safe because we are creating an anonymous mapping in a place not already used by
         // any other area in this process.
         let addr = unsafe {
+           // libc::malloc(size)
+            //DSN
             libc::mmap(
                 null_mut(),
                 size,

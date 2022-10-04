@@ -60,6 +60,28 @@ pub struct GuestMemory {
     regions: Arc<Vec<MemoryRegion>>,
 }
 
+//TODO this causes problems for trait safety
+// impl kani::Arbitrary for (GuestAddress, usize) {
+//     fn any() -> Self {
+//         (kani::any(), kani::any())
+//     }
+// }
+
+
+#[kani::proof]
+#[kani::unwind(4)]
+pub fn kani_test()
+{
+    let region = (kani::any(), kani::any());
+    let slice = [region];
+    let gm = GuestMemory::new(&slice);
+    let gm = gm.unwrap();
+    let end_addr = gm.end_addr();
+
+}
+
+
+
 impl GuestMemory {
     /// Creates a container for guest memory regions.
     /// Valid memory regions are specified as a Vec of (Address, Size) tuples sorted by Address.
