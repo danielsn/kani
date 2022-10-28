@@ -1,8 +1,19 @@
 # Copyright Kani Contributors
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
+name: Kani Action Check
+on: pull_request
 
-- name: Kani Rust Verifier
-  uses: model-checking/kani-github-action@v0.13-alpha
-  with:
-    command: cd tests/cargo-kani/simple-lib && cargo-kani
+jobs:
+  test-action:
+    runs-on: ubuntu-latest
+    name: Ensure that the Kani action continues to work
+    steps:
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run Kani
+        uses: model-checking/kani-github-action@v0.13-alpha
+        with:
+          command: cd tests/cargo-kani/simple-lib && cargo-kani
